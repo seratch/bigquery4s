@@ -2,15 +2,9 @@
 
 A handy Scala wrapper of Google BigQuery API 's Java Client Library.
 
-#### build.sbt
+#### Getting Started
 
-```scala
-scalaVersion := "2.11.6" // or "2.10.5"
-
-libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.1"
-```
-
-#### Example
+Read BigQuery API Quickstart for details.
 
 https://cloud.google.com/bigquery/bigquery-api-quickstart
 
@@ -30,7 +24,27 @@ https://cloud.google.com/bigquery/bigquery-api-quickstart
 
 Save the JSON file as `$HOME/.bigquery/client_secret.json`(the default path).
 
-##### Run examples
+##### Setting up sbt project
+
+If you don't have sbt installed yet, read the official guide:
+
+http://www.scala-sbt.org/0.13/tutorial/Setup.html
+
+If you're a MacOS X user, just `brew install sbt` will work fine for you.
+
+```sh
+brew install sbt # MacOS X
+
+mkdir -p $HOME/bq-sample/project
+cd $HOME/bq-sample
+
+echo 'libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.1"
+scalaVersion := "2.11.6"' > build.sbt
+echo "sbt.version=0.13.8" > project/build.properties
+sbt console
+```
+
+##### Run Examples
 
 Try the following examples on the `sbt console`.
 
@@ -65,16 +79,6 @@ println(rows.take(10).map(_.cells.map(_.value.orNull).mkString(",")).mkString("\
 18.0007436923,KY,2004,39
 18.0007436923,KY,2004,47
 18.0007436923,UT,1982,33
-18.0007436923,null,2008,32
-18.0007436923,GA,1979,34
-18.0007436923,KY,2004,47
-18.0007436923,null,2006,39
-18.0007436923,null,2005,35
-18.0007436923,null,2007,38
-18.0007436923,KY,2004,47
-18.0007436923,null,2005,42
-18.0007436923,null,2005,39
-18.0007436923,KY,2004,47
 ```
 
 See more examples [here](https://github.com/seratch/bigquery4s/tree/master/src/test/scala/bigquery4s/UsageExamplesSpec.scala).

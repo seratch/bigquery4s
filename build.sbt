@@ -3,8 +3,8 @@ lazy val root = (project in file("."))
     organization := "com.github.seratch",
     name := "bigquery4s",
     version := "0.1",
-    scalaVersion := "2.11.6",
-    crossScalaVersions := Seq("2.10.5", "2.11.6"),
+    scalaVersion := "2.11.7",
+    crossScalaVersions := Seq("2.10.6", "2.11.7"),
     libraryDependencies ++= Seq(
       "com.google.apis"         %  "google-api-services-bigquery" % "v2-rev215-1.20.0",
       "com.google.oauth-client" %  "google-oauth-client"          % "1.20.0",

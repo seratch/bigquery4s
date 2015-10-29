@@ -82,10 +82,11 @@ case class BigQuery(
   }
 
   def await(jobId: JobId, timeoutSeconds: Int = 300): WrappedCompletedJob = {
-    val job = underlying.jobs.get(jobId.projectId.value, jobId.value).execute()
+    var job = underlying.jobs.get(jobId.projectId.value, jobId.value).execute()
     (1 to timeoutSeconds).foreach { i =>
       if (job.getStatus.getState != "DONE") {
         Thread.sleep(1000)
+        job = underlying.jobs.get(jobId.projectId.value, jobId.value).execute()
       }
     }
     if (job.getStatus.getState != "DONE") {

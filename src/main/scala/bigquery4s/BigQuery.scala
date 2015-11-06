@@ -1,10 +1,11 @@
 package bigquery4s
 
 import java.io.{ File, InputStreamReader, FileInputStream }
+
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
-import com.google.api.client.googleapis.auth.oauth2.{ GoogleClientSecrets, GoogleAuthorizationCodeFlow }
+import com.google.api.client.googleapis.auth.oauth2.{ GoogleAuthorizationCodeFlow, GoogleClientSecrets, GoogleCredential }
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet._
 import com.google.api.client.json.JsonFactory
@@ -12,6 +13,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.{ DataStoreFactory, FileDataStoreFactory }
 import com.google.api.services.bigquery.model._
 import com.google.api.services.bigquery.{ Bigquery, BigqueryScopes }
+
 import scala.collection.JavaConverters._
 
 /**
@@ -20,33 +22,13 @@ import scala.collection.JavaConverters._
  * https://cloud.google.com/bigquery/bigquery-api-quickstart
  */
 case class BigQuery(
-    transport: HttpTransport = new NetHttpTransport,
-    jsonFactory: JsonFactory = new JacksonFactory,
-    clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
-    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
-    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))) {
-
-  lazy val clientSecrets: GoogleClientSecrets = {
-    using(new FileInputStream(clientSecretJsonPath)) { in =>
-      using(new InputStreamReader(in)) { reader =>
-        GoogleClientSecrets.load(jsonFactory, reader)
-      }
-    }
-  }
-
-  private[this] def authorize(): Credential = {
-    val flow = new GoogleAuthorizationCodeFlow.Builder(
-      transport,
-      jsonFactory,
-      clientSecrets,
-      scopes.asJava
-    ).setDataStoreFactory(dataStoreFactory).build()
-
-    new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user")
-  }
+  transport: HttpTransport,
+  jsonFactory: JsonFactory,
+  credential: Credential
+) {
 
   lazy val underlying: Bigquery = {
-    new Bigquery(transport, jsonFactory, authorize())
+    new Bigquery(transport, jsonFactory, credential)
   }
 
   def listDatasets(projectId: String): Seq[WrappedDatasets] = listDatasets(ProjectId(projectId))
@@ -103,6 +85,55 @@ case class BigQuery(
       .getQueryResults(job.getJobReference.getProjectId, job.getJobReference.getJobId)
       .execute()
     response.getRows.asScala.toSeq.map(WrappedTableRow)
+  }
+
+}
+
+object BigQuery {
+
+  def fromClientSecretJson(
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))): BigQuery = {
+
+    val clientSecrets: GoogleClientSecrets =
+      using(new FileInputStream(clientSecretJsonPath)) { in =>
+        using(new InputStreamReader(in)) { reader =>
+          GoogleClientSecrets.load(jsonFactory, reader)
+        }
+      }
+
+    val flow = new GoogleAuthorizationCodeFlow.Builder(
+      transport,
+      jsonFactory,
+      clientSecrets,
+      scopes.asJava
+    ).setDataStoreFactory(dataStoreFactory).build()
+
+    val credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user")
+
+    new BigQuery(transport, jsonFactory, credential)
+  }
+
+  def fromServiceAccount(
+    serviceAccountId: String,
+    serviceAccountPrivateKeyP12FilePath: String = homeDir + "/.bigquery/service_account.p12",
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+  ): BigQuery = {
+
+    val credential = new GoogleCredential.Builder()
+        .setTransport(transport)
+        .setJsonFactory(jsonFactory)
+        .setServiceAccountId(serviceAccountId)
+        .setServiceAccountPrivateKeyFromP12File(new File(serviceAccountPrivateKeyP12FilePath))
+        .setServiceAccountScopes(scopes.asJava)
+        .build()
+
+    new BigQuery(transport, jsonFactory, credential)
   }
 
 }

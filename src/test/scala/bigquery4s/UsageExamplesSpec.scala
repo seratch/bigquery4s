@@ -12,7 +12,7 @@ class UsageExamplesSpec extends FunSpec with Matchers {
 
   describe("Simple query example with publicdata") {
     it("runs") {
-      val bq = BigQuery.fromClientSecretJson()
+      val bq = BigQuery()
 
       val datasets: Seq[WrappedDatasets] = bq.listDatasets("publicdata")
       logger.info(datasets.mkString("\n"))

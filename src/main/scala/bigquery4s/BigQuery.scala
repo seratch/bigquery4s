@@ -91,6 +91,16 @@ case class BigQuery(
 
 object BigQuery {
 
+  def apply(
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))): BigQuery = {
+
+    fromClientSecretJson(transport, jsonFactory, clientSecretJsonPath, scopes, dataStoreFactory)
+  }
+
   def fromClientSecretJson(
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
@@ -114,7 +124,7 @@ object BigQuery {
 
     val credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user")
 
-    new BigQuery(transport, jsonFactory, credential)
+    BigQuery(transport, jsonFactory, credential)
   }
 
   def fromServiceAccount(
@@ -133,7 +143,7 @@ object BigQuery {
         .setServiceAccountScopes(scopes.asJava)
         .build()
 
-    new BigQuery(transport, jsonFactory, credential)
+    BigQuery(transport, jsonFactory, credential)
   }
 
 }

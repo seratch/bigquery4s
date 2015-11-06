@@ -22,10 +22,9 @@ import scala.collection.JavaConverters._
  * https://cloud.google.com/bigquery/bigquery-api-quickstart
  */
 case class BigQuery(
-  transport: HttpTransport,
-  jsonFactory: JsonFactory,
-  credential: Credential
-) {
+    transport: HttpTransport,
+    jsonFactory: JsonFactory,
+    credential: Credential) {
 
   lazy val underlying: Bigquery = {
     new Bigquery(transport, jsonFactory, credential)
@@ -132,16 +131,15 @@ object BigQuery {
     serviceAccountPrivateKeyP12FilePath: String = homeDir + "/.bigquery/service_account.p12",
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
-    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
-  ): BigQuery = {
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)): BigQuery = {
 
     val credential = new GoogleCredential.Builder()
-        .setTransport(transport)
-        .setJsonFactory(jsonFactory)
-        .setServiceAccountId(serviceAccountId)
-        .setServiceAccountPrivateKeyFromP12File(new File(serviceAccountPrivateKeyP12FilePath))
-        .setServiceAccountScopes(scopes.asJava)
-        .build()
+      .setTransport(transport)
+      .setJsonFactory(jsonFactory)
+      .setServiceAccountId(serviceAccountId)
+      .setServiceAccountPrivateKeyFromP12File(new File(serviceAccountPrivateKeyP12FilePath))
+      .setServiceAccountScopes(scopes.asJava)
+      .build()
 
     BigQuery(transport, jsonFactory, credential)
   }

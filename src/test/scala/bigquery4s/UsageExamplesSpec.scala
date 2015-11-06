@@ -38,5 +38,4 @@ class UsageExamplesSpec extends FunSpec with Matchers {
        |""".stripMargin)
     }
   }
-
 }

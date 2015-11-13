@@ -83,7 +83,7 @@ case class BigQuery(
     val response: GetQueryResultsResponse = underlying.jobs
       .getQueryResults(job.getJobReference.getProjectId, job.getJobReference.getJobId)
       .execute()
-    response.getRows.asScala.toSeq.map(WrappedTableRow)
+    Option(response.getRows).map(_.asScala.toSeq.map(WrappedTableRow)).getOrElse(Nil)
   }
 
 }

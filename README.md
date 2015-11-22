@@ -1,4 +1,4 @@
-### bigquery4s
+### bigquery4s [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.seratch/bigquery4s_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.seratch/bigquery4s_2.11)
 
 A handy Scala wrapper of Google BigQuery API 's Java Client Library.
 

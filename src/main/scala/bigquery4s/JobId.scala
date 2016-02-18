@@ -5,4 +5,5 @@ package bigquery4s
  */
 case class JobId(
   projectId: ProjectId,
-  value: String)
+  value: String
+)

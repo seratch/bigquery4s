@@ -24,7 +24,8 @@ import scala.collection.JavaConverters._
 case class BigQuery(
     transport: HttpTransport,
     jsonFactory: JsonFactory,
-    credential: Credential) {
+    credential: Credential
+) {
 
   lazy val underlying: Bigquery = {
     new Bigquery(transport, jsonFactory, credential)
@@ -95,7 +96,8 @@ object BigQuery {
     jsonFactory: JsonFactory = new JacksonFactory,
     clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
-    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))): BigQuery = {
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))
+  ): BigQuery = {
 
     fromClientSecretJson(transport, jsonFactory, clientSecretJsonPath, scopes, dataStoreFactory)
   }
@@ -105,7 +107,8 @@ object BigQuery {
     jsonFactory: JsonFactory = new JacksonFactory,
     clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
-    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))): BigQuery = {
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))
+  ): BigQuery = {
 
     val clientSecrets: GoogleClientSecrets =
       using(new FileInputStream(clientSecretJsonPath)) { in =>
@@ -131,7 +134,8 @@ object BigQuery {
     serviceAccountPrivateKeyP12FilePath: String = homeDir + "/.bigquery/service_account.p12",
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
-    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)): BigQuery = {
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+  ): BigQuery = {
 
     val credential = new GoogleCredential.Builder()
       .setTransport(transport)

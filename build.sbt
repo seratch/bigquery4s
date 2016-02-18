@@ -10,8 +10,8 @@ lazy val root = (project in file("."))
       "com.google.oauth-client" %  "google-oauth-client"          % "1.21.0",
       "com.google.oauth-client" %  "google-oauth-client-jetty"    % "1.21.0",
       "com.google.http-client"  %  "google-http-client-jackson2"  % "1.21.0",
-      "ch.qos.logback"          %  "logback-classic"              % "1.1.3"   % Test,
-      "org.scalatest"           %% "scalatest"                    % "2.2.5"   % Test
+      "ch.qos.logback"          %  "logback-classic"              % "1.1.4"   % Test,
+      "org.scalatest"           %% "scalatest"                    % "2.2.6"   % Test
     ),
     parallelExecution in Test := false,
     logBuffered in Test := false,
@@ -37,4 +37,4 @@ lazy val root = (project in file("."))
       <url>http://git.io/sera</url>
     </developer>
   </developers>
-  ).settings(scalariformSettings: _*)
+  ).settings(scalariformSettings)

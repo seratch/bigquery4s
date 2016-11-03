@@ -41,9 +41,9 @@ brew install sbt # MacOS X
 mkdir -p $HOME/bq-sample/project
 cd $HOME/bq-sample
 
-echo 'libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.3"
-scalaVersion := "2.11.7"' > build.sbt
-echo "sbt.version=0.13.9" > project/build.properties
+echo 'libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.5"
+scalaVersion := "2.12.0"' > build.sbt
+echo "sbt.version=0.13.13" > project/build.properties
 sbt console
 ```
 

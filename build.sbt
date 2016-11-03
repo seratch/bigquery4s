@@ -2,14 +2,14 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.github.seratch",
     name := "bigquery4s",
-    version := "0.4",
+    version := "0.5",
     scalaVersion := "2.12.0",
     crossScalaVersions := Seq("2.12.0", "2.11.8", "2.10.6"),
     libraryDependencies ++= Seq(
-      "com.google.apis"         %  "google-api-services-bigquery" % "v2-rev248-1.21.0",
-      "com.google.oauth-client" %  "google-oauth-client"          % "1.21.0",
-      "com.google.oauth-client" %  "google-oauth-client-jetty"    % "1.21.0",
-      "com.google.http-client"  %  "google-http-client-jackson2"  % "1.21.0",
+      "com.google.apis"         %  "google-api-services-bigquery" % "v2-rev328-1.22.0",
+      "com.google.oauth-client" %  "google-oauth-client"          % "1.22.0",
+      "com.google.oauth-client" %  "google-oauth-client-jetty"    % "1.22.0",
+      "com.google.http-client"  %  "google-http-client-jackson2"  % "1.22.0",
       "ch.qos.logback"          %  "logback-classic"              % "1.1.7"   % Test,
       "org.scalatest"           %% "scalatest"                    % "3.0.0"   % Test
     ),

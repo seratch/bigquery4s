@@ -148,4 +148,18 @@ object BigQuery {
     BigQuery(transport, jsonFactory, credential)
   }
 
+  def fromServiceAccountJson(
+    serviceAccountJsonFilePath: String = homeDir + "/.bigquery/service_account.json",
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+  ): BigQuery = {
+
+    val credential = using(new FileInputStream(serviceAccountJsonFilePath)) { in =>
+      GoogleCredential.fromStream(in).createScoped(scopes.asJava)
+    }
+
+    BigQuery(transport, jsonFactory, credential)
+  }
+
 }

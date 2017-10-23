@@ -1,6 +1,6 @@
 package bigquery4s
 
-import java.io.{ File, InputStreamReader, FileInputStream }
+import java.io.{ File, InputStream, InputStreamReader, FileInputStream }
 
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
@@ -155,7 +155,17 @@ object BigQuery {
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
   ): BigQuery = {
 
-    val credential = using(new FileInputStream(serviceAccountJsonFilePath)) { in =>
+    BigQuery.fromServiceAccountJsonInputStream(new FileInputStream(serviceAccountJsonFilePath), transport, jsonFactory, scopes)
+  }
+
+  def fromServiceAccountJsonInputStream(
+    serviceAccountJsonInputStream: InputStream,
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+  ): BigQuery = {
+
+    val credential = using(serviceAccountJsonInputStream) { in =>
       GoogleCredential.fromStream(in).createScoped(scopes.asJava)
     }
 

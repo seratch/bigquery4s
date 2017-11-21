@@ -155,7 +155,11 @@ object BigQuery {
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
   ): BigQuery = {
 
-    BigQuery.fromServiceAccountJsonInputStream(new FileInputStream(serviceAccountJsonFilePath), transport, jsonFactory, scopes)
+    val credential = using(new FileInputStream(serviceAccountJsonFilePath)) { in =>
+      GoogleCredential.fromStream(in).createScoped(scopes.asJava)
+    }
+
+    BigQuery(transport, jsonFactory, credential)
   }
 
   def fromServiceAccountJsonInputStream(

@@ -2,7 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.github.seratch",
     name := "bigquery4s",
-    version := "0.7-SNAPSHOT",
+    version := "0.7",
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq("2.12.4", "2.11.12", "2.10.7"),
     libraryDependencies ++= Seq(
@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
     parallelExecution in Test := false,
     logBuffered in Test := false,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
+    publishTo := _publishTo(version.value),
     publishMavenStyle := true,
     pomIncludeRepository := { x => false },
     pomExtra := <url>https://github.com/seratch/bigquery4s/</url>
@@ -38,3 +39,9 @@ lazy val root = (project in file("."))
     </developer>
   </developers>
   )
+
+def _publishTo(v: String) = {
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}

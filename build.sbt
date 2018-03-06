@@ -2,7 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.github.seratch",
     name := "bigquery4s",
-    version := "0.6-teads1",
+    version := "0.7-SNAPSHOT",
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq("2.12.4", "2.11.12", "2.10.7"),
     libraryDependencies ++= Seq(
@@ -37,4 +37,4 @@ lazy val root = (project in file("."))
       <url>http://git.io/sera</url>
     </developer>
   </developers>
-  ).settings(scalariformSettings)
+  )

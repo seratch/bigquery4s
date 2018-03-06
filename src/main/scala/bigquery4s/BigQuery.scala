@@ -1,6 +1,6 @@
 package bigquery4s
 
-import java.io.{ File, InputStreamReader, FileInputStream }
+import java.io.{ File, FileInputStream, InputStreamReader }
 
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
@@ -14,6 +14,7 @@ import com.google.api.client.util.store.{ DataStoreFactory, FileDataStoreFactory
 import com.google.api.services.bigquery.model._
 import com.google.api.services.bigquery.{ Bigquery, BigqueryScopes }
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 /**
@@ -24,11 +25,14 @@ import scala.collection.JavaConverters._
 case class BigQuery(
     transport: HttpTransport,
     jsonFactory: JsonFactory,
-    credential: Credential
+    credential: Credential,
+    applicationName: String
 ) {
 
   lazy val underlying: Bigquery = {
-    new Bigquery(transport, jsonFactory, credential)
+    new Bigquery.Builder(transport, jsonFactory, credential)
+      .setApplicationName(applicationName)
+      .build()
   }
 
   def listDatasets(projectId: String): Seq[WrappedDatasets] = listDatasets(ProjectId(projectId))
@@ -84,8 +88,25 @@ case class BigQuery(
     val response: GetQueryResultsResponse = underlying.jobs
       .getQueryResults(job.getJobReference.getProjectId, job.getJobReference.getJobId)
       .execute()
-    Option(response.getRows).map(_.asScala.toSeq.map(WrappedTableRow)).getOrElse(Nil)
+    readPage(response, wrapRows(response), response.getPageToken)
   }
+
+  private def wrapRows(response: GetQueryResultsResponse) =
+    Option(response.getRows).map(_.asScala.toSeq.map(WrappedTableRow)).getOrElse(Nil)
+
+  @tailrec
+  private def readPage(
+    qr: GetQueryResultsResponse,
+    acc: Seq[WrappedTableRow],
+    pageToken: String
+  ): Seq[WrappedTableRow] =
+    if (pageToken != null) {
+      val jr = qr.getJobReference
+      val response = underlying.jobs().getQueryResults(jr.getProjectId, jr.getJobId).setPageToken(pageToken).execute()
+      val pageRows = wrapRows(response)
+      readPage(response, acc ++ pageRows, response.getPageToken)
+    } else
+      acc
 
 }
 
@@ -96,7 +117,8 @@ object BigQuery {
     jsonFactory: JsonFactory = new JacksonFactory,
     clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
-    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default")),
+    applicationName: String = "bigquery4s-client"
   ): BigQuery = {
 
     fromClientSecretJson(transport, jsonFactory, clientSecretJsonPath, scopes, dataStoreFactory)
@@ -107,7 +129,8 @@ object BigQuery {
     jsonFactory: JsonFactory = new JacksonFactory,
     clientSecretJsonPath: String = homeDir + "/.bigquery/client_secret.json",
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
-    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default"))
+    dataStoreFactory: DataStoreFactory = new FileDataStoreFactory(new File(homeDir, ".bigquery/datastore/default")),
+    applicationName: String = "bigquery4s-client"
   ): BigQuery = {
 
     val clientSecrets: GoogleClientSecrets =
@@ -126,7 +149,7 @@ object BigQuery {
 
     val credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user")
 
-    BigQuery(transport, jsonFactory, credential)
+    BigQuery(transport, jsonFactory, credential, applicationName)
   }
 
   def fromServiceAccount(
@@ -134,7 +157,8 @@ object BigQuery {
     serviceAccountPrivateKeyP12FilePath: String = homeDir + "/.bigquery/service_account.p12",
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
-    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
+    applicationName: String = "bigquery4s-client"
   ): BigQuery = {
 
     val credential = new GoogleCredential.Builder()
@@ -145,21 +169,22 @@ object BigQuery {
       .setServiceAccountScopes(scopes.asJava)
       .build()
 
-    BigQuery(transport, jsonFactory, credential)
+    BigQuery(transport, jsonFactory, credential, applicationName)
   }
 
   def fromServiceAccountJson(
     serviceAccountJsonFilePath: String = homeDir + "/.bigquery/service_account.json",
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
-    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY)
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
+    applicationName: String = "bigquery4s-client"
   ): BigQuery = {
 
     val credential = using(new FileInputStream(serviceAccountJsonFilePath)) { in =>
       GoogleCredential.fromStream(in).createScoped(scopes.asJava)
     }
 
-    BigQuery(transport, jsonFactory, credential)
+    BigQuery(transport, jsonFactory, credential, applicationName)
   }
 
 }

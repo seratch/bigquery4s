@@ -2,7 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.github.seratch",
     name := "bigquery4s",
-    version := "0.6",
+    version := "0.6-teads1",
     scalaVersion := "2.12.4",
     crossScalaVersions := Seq("2.12.4", "2.11.12", "2.10.7"),
     libraryDependencies ++= Seq(

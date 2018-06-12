@@ -44,12 +44,16 @@ case class BigQuery(
 
   // TODO: tables ops
 
+  def startStandardQuery(projectId: String, query: String): JobId = startQuery(ProjectId(projectId), query, useLegacy = false)
+
+  def startStandardQuery(projectId: ProjectId, query: String): JobId = startQuery(projectId, query, useLegacy = false)
+
   def startQuery(projectId: String, query: String): JobId = startQuery(ProjectId(projectId), query)
 
-  def startQuery(projectId: ProjectId, query: String): JobId = {
+  def startQuery(projectId: ProjectId, query: String, useLegacy: Boolean = true): JobId = {
     val job: Job = {
       val config = new JobConfiguration
-      val queryConfig = new JobConfigurationQuery
+      val queryConfig = new JobConfigurationQuery().setUseLegacySql(useLegacy)
       config.setQuery(queryConfig)
       val j = new Job
       j.setConfiguration(config)

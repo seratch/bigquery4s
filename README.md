@@ -19,19 +19,35 @@ https://cloud.google.com/bigquery/bigquery-api-quickstart
 
 ##### Generate a Client ID and Client Secret for your Application
 
-- Visit the [Google Developers Console](https://console.developers.google.com/project) and select the project you just created.
-- Click on APIS & AUTH on the left, then select Credentials. Click on "Create new Client ID."
-- Select Installed application.
-- Click Create client ID, then click Download JSON to download the client file.
+- Visit the [Google APIs Management Console / Credentials](https://console.developers.google.com/apis/credentials) and select the project you just created.
+- Click on "Create credentials" and select "OAuth client ID"
+- Regarding "Application type", choose "Other"
+- Select the created credentials, then click "DOWNLOAD JSON" to download the client file.
 - Copy the downloaded file to a location accessible from your application, and give it a name like client_secrets.json. Your application will refer to this file as part of the flow of authorizing access to the BigQuery API. For more information about using the client_secrets.json format, see [this page](https://developers.google.com/api-client-library/python/guide/aaa_client_secrets).
 
 Save the JSON file as `$HOME/.bigquery/client_secret.json`(the default path).
 
+```json
+{
+  "installed": {
+    "client_id": "227606545271-**********************.apps.googleusercontent.com",
+    "project_id": "project-name-****",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://accounts.google.com/o/oauth2/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "_ErCD2t-lY-**********-****",
+    "redirect_uris": [
+      "urn:ietf:wg:oauth:2.0:oob",
+      "http://localhost"
+    ]
+  }
+}
+```
 ##### Setting up sbt project
 
 If you don't have sbt installed yet, read the official guide:
 
-http://www.scala-sbt.org/0.13/tutorial/Setup.html
+https://www.scala-sbt.org/1.x/docs/Setup.html
 
 If you're a MacOS X user, just `brew install sbt` will work fine for you.
 
@@ -41,9 +57,9 @@ brew install sbt # MacOS X
 mkdir -p $HOME/bq-sample/project
 cd $HOME/bq-sample
 
-echo 'libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.5"
-scalaVersion := "2.12.0"' > build.sbt
-echo "sbt.version=0.13.13" > project/build.properties
+echo 'libraryDependencies += "com.github.seratch" %% "bigquery4s" % "0.8"
+scalaVersion := "2.12.6"' > build.sbt
+echo "sbt.version=1.1.6" > project/build.properties
 sbt console
 ```
 
@@ -90,5 +106,5 @@ See more examples [here](https://github.com/seratch/bigquery4s/tree/master/src/t
 
 (The MIT License)
 
-Copyright (c) 2015 Kazuhiro Sera <seratch_at_gmail.com>
+Copyright (c) 2015 - Kazuhiro Sera <seratch_at_gmail.com>
 

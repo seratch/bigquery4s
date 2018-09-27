@@ -184,4 +184,14 @@ object BigQuery {
     BigQuery(transport, jsonFactory, credential, applicationName)
   }
 
+  def fromDefaultInstance(
+    transport: HttpTransport = new NetHttpTransport,
+    jsonFactory: JsonFactory = new JacksonFactory,
+    scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
+    applicationName: String = "bigquery4s-client"): BigQuery = {
+
+    val credential = GoogleCredential.getApplicationDefault
+
+    BigQuery(transport, jsonFactory, credential, applicationName)
+  }
 }

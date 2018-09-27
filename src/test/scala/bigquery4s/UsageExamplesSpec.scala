@@ -10,14 +10,16 @@ class UsageExamplesSpec extends FunSpec with Matchers {
 
   lazy val logger = LoggerFactory.getLogger(classOf[UsageExamplesSpec])
 
+  val yourOwnProjectId: String = "thinking-digit-98014"
+  implicit val bq: BigQuery = BigQuery()
+  implicit val projectId: ProjectId = ProjectId(yourOwnProjectId)
+
   describe("Simple query example with publicdata") {
     it("runs") {
-      val bq = BigQuery()
 
       val datasets: Seq[WrappedDatasets] = bq.listDatasets("publicdata")
       logger.info(datasets.mkString("\n"))
 
-      val yourOwnProjectId = "thinking-digit-98014"
       val query = """
         SELECT weight_pounds,state,year,gestation_weeks FROM publicdata:samples.natality
         ORDER BY weight_pounds DESC LIMIT 100;
@@ -36,6 +38,40 @@ class UsageExamplesSpec extends FunSpec with Matchers {
        |weight_pounds,state,year,gestation_weeks
        |${sampleCsv.mkString("\n")}
        |""".stripMargin)
+    }
+  }
+
+  describe("Simple legacy sql query example with publicdata") {
+    it("runs") {
+      import bigquery4s.interpolation.Implicits._
+
+      val rows: Seq[WrappedTableRow] =
+        bql"SELECT weight_pounds,state,year,gestation_weeks FROM publicdata:samples.natality ORDER BY weight_pounds DESC LIMIT 100;"
+      val sampleCsv = rows.take(20).map(_.cells.map(_.value.orNull).mkString(","))
+
+      logger.info(s"""
+        |*** QueryResult ***
+        |
+        |weight_pounds,state,year,gestation_weeks
+        |${sampleCsv.mkString("\n")}
+        |""".stripMargin)
+    }
+  }
+
+  describe("Simple standard sql query example with publicdata") {
+    it("runs") {
+      import bigquery4s.interpolation.Implicits._
+
+      val rows: Seq[WrappedTableRow] =
+        bql"SELECT weight_pounds,state,year,gestation_weeks FROM publicdata.samples.natality ORDER BY weight_pounds DESC LIMIT 100;"
+      val sampleCsv = rows.take(20).map(_.cells.map(_.value.orNull).mkString(","))
+
+      logger.info(s"""
+        |*** QueryResult ***
+        |
+        |weight_pounds,state,year,gestation_weeks
+        |${sampleCsv.mkString("\n")}
+        |""".stripMargin)
     }
   }
 }

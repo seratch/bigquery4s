@@ -12,7 +12,7 @@ class BQInterpolationString(private val s: StringContext) extends AnyVal {
     * @param projectId implicit declaration of ProjectId
     * @return
     */
-  def bqs(args: Any*)(bq: BigQuery, projectId: ProjectId): Seq[WrappedTableRow] =
+  def bqs(args: Any*)(implicit bq: BigQuery, projectId: ProjectId): Seq[WrappedTableRow] =
     bq.getRows(
       bq.await(
         bq.startStandardQuery(
@@ -27,7 +27,7 @@ class BQInterpolationString(private val s: StringContext) extends AnyVal {
     * @param projectId implicit declaration of ProjectId
     * @return
     */
-  def bql(args: Any*)(bq: BigQuery, projectId: ProjectId): Seq[WrappedTableRow] =
+  def bql(args: Any*)(implicit bq: BigQuery, projectId: ProjectId): Seq[WrappedTableRow] =
     bq.getRows(
       bq.await(
         bq.startQuery(

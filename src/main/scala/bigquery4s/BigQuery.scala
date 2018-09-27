@@ -184,7 +184,7 @@ object BigQuery {
     BigQuery(transport, jsonFactory, credential, applicationName)
   }
 
-  def fromDefaultInstance(
+  def fromApplicationDefault(
     transport: HttpTransport = new NetHttpTransport,
     jsonFactory: JsonFactory = new JacksonFactory,
     scopes: Seq[String] = Seq(BigqueryScopes.BIGQUERY),
